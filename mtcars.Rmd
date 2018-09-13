@@ -1,0 +1,133 @@
+---
+title: 'Regression models course project: Motor cars trend'
+author: "Abdul Rasheed Narejo"
+date: "12/09/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Summary
+This report examines the relationship between mileage (mpg or miles per gallon) and transmission (am) type of the car. We have to check whether;
+
+* an automatic or manual transmission is better for MPG and,
+* quantify the MPG difference between automatic and manual transmissions
+
+Based on the analysis, I have concluded that, 
+
+1. manual transmission on average performs `r round(7.245, 2)` miles per gallon better than automatic transmission. However, transmission type (am) alone explains only 33.85% of the variance.
+
+2. After adding other variables, manual transmission alone improves mgp by `r round(2.9358, 2)` compared to automatic transmission while holding weight and qsec (1/4 mile time) constant. These three variables (am, wt, qsec) collectively explain 83.36% variance of the outcome.
+
+# About the assignmenet
+You work for Motor Trend, a magazine about the automobile industry. Looking at a data set of a collection of cars, they are interested in exploring the relationship between a set of variables and miles per gallon (MPG) (outcome).
+
+The data was extracted from the 1974 Motor Trend US magazine, and comprises fuel consumption and 10 aspects of automobile design and performance for 32 automobiles (1973–74 models). The data frame has 32 observations on 11 (numeric) variables. the variable description is provided below.
+
+* **mpg** Miles/(US) gallon  
+* **cy** Number of cylinders  
+* **disp** Displacement (cu.in.)  
+* **hp** Gross horsepower  
+* **drat** Rear axle ratio  
+* **wt** Weight (1000 lbs)  
+* **qsec** 1/4 mile time  
+* **vs** Engine (0 = V-shaped, 1 = straight)  
+* **am** Transmission (0 = automatic, 1 = manual)  
+* **gear** Number of forward gears  
+* **carb** Number of carburetors  
+
+# load libraries
+```{r}
+library(ggplot2) # for visualization
+```
+
+loading the data 
+```{r}
+data(mtcars)
+str(mtcars)
+```
+
+# Data processing
+According to the data description, "am" column represents car transmission system with 0 being automatic and 1 being manual transmission. "cyl", "vs", "gear", and "carbs" also converted into factor variables.
+
+```{r}
+mtcars$cyl <- factor(mtcars$cyl)
+mtcars$vs <- factor(mtcars$vs)
+mtcars$am <- factor(mtcars$am, labels =c("Automatic", "Manual"))
+mtcars$gear <- factor(mtcars$gear)
+mtcars$carb <- factor(mtcars$carb)
+```
+
+# Exploratory data analysis
+Let's graphically project mpg (mileage) for different am (transmission) types.
+```{r}
+ggplot(mtcars, aes(x = am, y = mpg, fill=am) ) + 
+    geom_boxplot() +
+    ggtitle("Graph: Transmission (automatic/manual) vs. fuel efficiency(mpg) ") +
+    xlab("Transmission") +
+    ylab("Fuel Efficiency (mpg)")
+```
+Manual cars generally have better mileage vs. automatic cars. Let's check if the difference is statistically significant.
+
+# Statistical Inference
+To check whether cars mileage (mpg) is impacted by transmission type (am), we will set a null and alternative hypothesis;  
+* **null hypthesis:** mpg of manual and automatic cars are no different.
+* **alternative hypothesis:** there is significant difference between mpg manual vs automatic cars.
+
+We use t-test to verify this.
+
+```{r}
+test <- t.test(mpg ~ am, data = mtcars)
+
+test$p.value
+```
+Based on p.value of `r round(test$p.value, 5)`, which is significantly less than 0.05, we reject null hyothesis. There is significant difference in mpg of two types of cars. 
+
+We can also check for average mileage (mpg) for automatic and manual cars.
+```{r}
+autoMeanMPG <- mean(mtcars$mpg[mtcars$am == 0])
+
+manualMeanMPG <- mean(mtcars$mpg[mtcars$am == 1])
+```
+Average mileage for automatic cars is: `r, autoMeanMPG`.
+Average mileage for automatic cars is: `r, manualMeanMPG`
+
+
+# Simple linear regression model
+We will use mpg as dependent variable and am as independent variable to fit simple linear regression model.
+
+```{r}
+baseModel <- lm(mpg ~ am, data = mtcars)
+summary(baseModel)
+```
+
+The adjusted R squared is 0.3385 which means our model only explains 33.85% variance.
+
+Lets build a model that regresses mpg on all other variables in dataset to see if other variables can better explain the residual variance.
+
+```{r}
+fullModel <- lm(mpg ~ ., data = mtcars)
+summary(fullModel)
+```
+As expected, this model has R-squared of 0.869. However, none of the cofficients are significant at 0.05 level.
+
+We will use step function from R to check which variables to include in final model.
+
+```{r}
+stepModel <- step(fullModel, direction = "backward", trace = FALSE)
+summary(stepModel)
+```
+This model is far more efficient in terms of variables (wt, qsec, am) which have significance in explaining the variance in depdendent variables. The model explains 0.85 of the variance.
+From the coefficients of this model we can conclude that, holding wt and qsec constant, manual cars on average get 2.9 extra miles per gallon than automatic.
+
+```{r}
+#confint(stepModel)["am",]
+```
+
+```{r}
+par(mfrow = c(2, 2))
+plot(stepModel)
+```
+
