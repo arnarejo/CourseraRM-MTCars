@@ -75,8 +75,8 @@ Manual cars generally have better mileage vs. automatic cars. Let's check if the
 
 ## Statistical Inference
 To check whether cars mileage (mpg) is impacted by transmission type (am), we will set a null and alternative hypothesis;  
-* **H0:** mpg of manual and automatic cars are no different.
-* **H1:** there is significant difference between mpg manual vs automatic cars.
+**H0:** mpg of manual and automatic cars are no different.  
+**H1:** there is significant difference between mpg manual vs automatic cars.  
 
 We use t-test to verify this.
 

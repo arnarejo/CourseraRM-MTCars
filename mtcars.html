@@ -321,8 +321,8 @@ $(document).ready(function () {
 2. manual transmission on average performs 7.25 mpg better than automatic transmission for simple linear regression model. However, this model only explains 33.85% of the variance.<br />
 3. Using best fitted multiple regression model, manual transmission performs 1.81 mpg better compared to automatic transmission. This explain 86.59% variance of the outcome.</p>
 </div>
-<div id="introduction" class="section level2">
-<h2>Introduction</h2>
+<div id="objective-of-the-assignment" class="section level2">
+<h2>Objective of the assignment</h2>
 <p>You work for Motor Trend, a magazine about the automobile industry. Looking at a data set of a collection of cars, they are interested in exploring the relationship between a set of variables and miles per gallon (MPG) (outcome).</p>
 <p>This report examines the relationship between mileage (mpg or miles per gallon) and transmission (am) type of the car. We have to check whether;</p>
 <ul>
@@ -399,7 +399,8 @@ mtcars$carb &lt;- factor(mtcars$carb)</code></pre>
 <div id="statistical-inference" class="section level2">
 <h2>Statistical Inference</h2>
 <p>To check whether cars mileage (mpg) is impacted by transmission type (am), we will set a null and alternative hypothesis;<br />
-* <strong>H0:</strong> mpg of manual and automatic cars are no different. * <strong>H1:</strong> there is significant difference between mpg manual vs automatic cars.</p>
+<strong>H0:</strong> mpg of manual and automatic cars are no different.<br />
+<strong>H1:</strong> there is significant difference between mpg manual vs automatic cars.</p>
 <p>We use t-test to verify this.</p>
 <pre class="r"><code>test &lt;- t.test(mpg ~ am, data = mtcars)
 
